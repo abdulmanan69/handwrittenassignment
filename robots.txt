@@ -1,0 +1,15 @@
+# Robots.txt for Handwritten Assignment Generator
+# https://abdulmanan69.github.io/handwrittenassignment/
+
+User-agent: *
+Allow: /
+Allow: /app/
+
+# Disallow admin or private directories (none currently)
+# Disallow: /admin/
+
+# Sitemap location
+Sitemap: https://abdulmanan69.github.io/handwrittenassignment/sitemap.xml
+
+# Crawl-delay (optional, can be adjusted)
+Crawl-delay: 1
