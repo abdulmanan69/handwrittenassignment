@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text to Handwriting</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+  <link rel="stylesheet" href="static/final.css" />
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Text to Handwritten Assignment</h1>
+  </header>
+  <!-- App only -->
+  <section id="section2">
+    <div id="container-wrapper" class="two-col">
+      <aside id="left-pane">
+      <div id="input-container1">
+        <div id="mode-toggle">
+<button id="toggle-mode-button" class="file-button">Open Drawing</button>
+        </div>
+        <div id="input-container" class="input-boxes">
+          <div class="input-box textarea-box">
+            <div id="toolbar-container">
+              <span class="ql-formats">
+                <select class="ql-size"></select>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-bold"></button>
+                <button class="ql-italic"></button>
+                <button class="ql-underline"></button>
+                <button class="ql-strike"></button>
+              </span>
+              <span class="ql-formats">
+                <select class="ql-color"></select>
+                <select class="ql-background"></select>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-script" value="sub"></button>
+                <button class="ql-script" value="super"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-blockquote"></button>
+                <button class="ql-code-block"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-list" value="ordered"></button>
+                <button class="ql-list" value="bullet"></button>
+                <button class="ql-indent" value="-1"></button>
+                <button class="ql-indent" value="+1"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-direction" value="rtl"></button>
+                <select class="ql-align"></select>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-formula"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-clean"></button>
+              </span>
+            </div>
+
+            <div class="input-row">
+              <div id="mixed-container">
+                <div id="mixed-input"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-box" id="drawing-controls">
+            <div id="canvas-container">
+              <canvas id="drawing-canvas"></canvas>
+            </div>
+            <div id="canvas-tools">
+              <div id="icons">
+                <button id="color-picker-button"><img src="static/icons/color.svg" alt="Color Picker">color</button>
+                <input type="color" id="drawing-color" value="#000000" style="display: none;">
+                <button id="pen-button"><img src="static/icons/pen.svg" alt="pen">pen</button>
+                <button id="eraser-button"><img src="static/icons/eraser.svg" alt="eraser">eraser</button>
+                <button id="line-button"><img src="static/icons/line.svg" alt="line">line</button>
+                <button id="circle-button"><img src="static/icons/circle.svg" alt="circle">circle</button>
+                <button id="rectangle-button"><img src="static/icons/rectangle.svg" alt="rectangle">rectangle</button>
+                <button id="undo-button"><img src="static/icons/undo.svg" alt="undo">undo</button>
+                <button id="redo-button"><img src="static/icons/redo.svg" alt="redo">redo</button>
+                <button id="save-button"><img src="static/icons/save.svg" alt="save">save</button>
+                <button id="upload-button"><img src="static/icons/upload.svg" alt="upload">upload</button>
+                <button id="clear-button"><img src="static/icons/reset.svg" alt="reset">Clear</button>
+                <button id="add-to-paper-button"><img src="static/icons/done.svg" alt="done">Add inside paper</button>
+                <button id="add top of paper"><img src="static/icons/add top paper.svg" alt="done">Add top paper</button>
+              </div>
+              <div id="sliders">
+                <label for="canvas-width">Canvas Width:</label>
+                <input type="range" id="canvas-width" min="0" max="100" value="100">
+                <label for="canvas-height">Canvas Height:</label>
+                <input type="range" id="canvas-height" min="0" max="100" value="100">
+                <label for="drawing-size">drawing-size:</label>
+                <input type="range" id="drawing-size" min="1" max="30" value="5">
+              </div>
+            </div>
+          </div>
+
+          <div class="input-box" id="page-setup-box">
+            <div class="input-row">
+              <label for="page-size-select">Page Size:</label>
+              <select id="page-size-select">
+                <option value="A4" selected>A4</option>
+                <option value="Letter">Letter</option>
+                <option value="Legal">Legal</option>
+                <option value="A5">A5</option>
+              </select>
+            </div>
+            <div class="input-row">
+              <label for="page-orientation-select">Orientation:</label>
+              <select id="page-orientation-select">
+                <option value="portrait" selected>Portrait</option>
+                <option value="landscape">Landscape</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-box">
+            <div class="input-row">
+              <label for="font-size-input">Font Size:</label>
+              <div class="slider-container">
+                <input type="range" id="font-size-input" min="10" max="100" value="16" step="0.1">
+                <span id="font-size-input-value">16px</span>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="font-color-input">Font Color:</label>
+              <input type="color" id="font-color-input" value="#000f64">
+            </div>
+            <div class="input-row">
+              <label for="top-margin-font-size-input">Heading Font Size:</label>
+              <div class="slider-container">
+                <input type="range" id="top-margin-font-size-input" min="10" max="100" value="24" step="0.1">
+                <span id="top-margin-font-size-input-value">24px</span>
+              </div>
+            </div>
+            <div class="input-row">
+              <label class="font-label" for="font-family-select">Font:</label>
+              <select id="font-family-select" oninput="changeFontFamily()">
+                <option value="AnotherFont">Handwriting 1 (English Cursive)</option>
+                <option value="CustomFont">Handwriting 2 (English Normal)</option>
+                <option value="font3">Handwriting 3 (English Cursive)</option>
+                <option value="font4">Handwriting 4 (English Cursive)</option>
+                <option value="font5">Handwriting 5 (English Cursive)</option>
+                <option value="font6">Handwriting 6 (English Cursive)</option>
+                <option value="font7">Handwriting 7 (English Cursive)</option>
+                <option value="font8">Handwriting 8 (English Normal)</option>
+                <option value="font9">Handwriting 9 (English Cursive)</option>
+                <option value="font10">Handwriting 10 (English Normal)</option>
+                <option value="font11">Handwriting 11 (English Cursive)</option>
+                <option value="font12">Handwriting 12 (English Cursive)</option>
+                <option value="font13">Handwriting 13 (English Normal)</option>
+                <option value="font14">Handwriting 14 (English and Hindi Normal)</option>
+                <option value="font15">Handwriting 15 (English Normal)</option>
+                <option value="font16">Handwriting 16 (English Cursive)</option>
+                <option value="font17">Handwriting 17 (English Normal)</option>
+                <option value="font18">Handwriting 18 (English Normal)</option>
+                <option value="font19">Handwriting 19 (English Normal)</option>
+                <option value="font20">Handwriting 20 (English Normal)</option>
+                <option value="font21">Handwriting 21 (English Normal)</option>
+                <option value="font22">Handwriting 22 (English Normal)</option>
+                <option value="font23">Handwriting 23 (English Normal)</option>
+                <option value="font24">Handwriting 24 (English Cursive)</option>
+                <option value="font25">Handwriting 25 (English Cursive)</option>
+                <option value="font26">Handwriting 26 (English Cursive)</option>
+                <option value="font27">Handwriting 27 (English Cursive)</option>
+                <option value="font28">Handwriting 28 (English Cursive)</option>
+              </select>
+            </div>
+            <div class="input-row">
+              <label for="font-file-input" class="file-button">Font File (.ttf):</label>
+              <input type="file" id="font-file-input" accept=".ttf" oninput="changeFontfile()">
+            </div>
+            <div class="input-row">
+              <label for="default-math-font-checkbox">DefaultMathFont:</label>
+              <input type="checkbox" id="default-math-font-checkbox" onclick="toggleMathFont()" />
+            </div>
+          </div>
+
+          <div class="input-box">
+            <div class="input-row">
+              <label for="margin-top-input">input_top_margin:</label>
+              <div class="slider-container">
+                <input type="range" id="margin-top-input" min="0" max="200" value="0" step="0.1">
+                <span id="margin-top-input-value">0px</span>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="margin-left-input">input_left_margin:</label>
+              <div class="slider-container">
+                <input type="range" id="margin-left-input" min="0" max="200" value="0" class="margin-input" step="0.1">
+                <span id="margin-left-input-value">0px</span>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="toggle-left-margin">left_margin:</label>
+              <input type="checkbox" id="toggle-left-margin" class="margin-input" checked aria-checked="true" onclick="toggleLeftMargin()">
+              <label for="toggle-top-margin">top_margin:</label>
+              <input type="checkbox" id="toggle-top-margin" checked aria-checked="true" onclick="toggleTopMargin()">
+            </div>
+            <div class="input-row">
+              <label for="toggle-left-border">Left Margin Line:</label>
+              <input type="checkbox" id="toggle-left-border" checked aria-checked="true" onclick="toggleLeftBorder()">
+              <label for="toggle-top-border">Top Margin Line:</label>
+              <input type="checkbox" id="toggle-top-border" checked aria-checked="true" onclick="toggleTopBorder()">
+            </div>
+            <div class="input-row">
+              <label for="height-input">top_margin Height:</label>
+              <div class="slider-container">
+                <input type="range" id="height-input" min="0" max="100" value="50">
+                <span id="height-input-value">50%</span>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="width-input">left_margin Width:</label>
+              <div class="slider-container">
+                <input type="range" id="width-input" min="0" max="100" value="50">
+                <span id="width-input-value">50%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-box">
+            <div class="input-row">
+              <label for="line-spacing-text-input">input line spacing:</label>
+              <div class="slider-container">
+                <input type="range" id="line-spacing-text-input" min="0" max="100" value="0" step="0.1">
+                <span id="line-spacing-text-input-value">0px</span>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="line-spacing-input">paper line spacing:</label>
+              <div class="slider-container">
+                <input type="range" id="line-spacing-input" min="0" max="100" value="0" step="0.1">
+                <span id="line-spacing-input-value">0px</span>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="letter-spacing-input">Letter Spacing:</label>
+              <div class="slider-container">
+                <input type="range" id="letter-spacing-input" min="0" max="100" value="0">
+                <span id="letter-spacing-input-value">0px</span>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="word-spacing-input">Word Spacing:</label>
+              <div class="slider-container">
+                <input type="range" id="word-spacing-input" min="0" max="100" value="0">
+                <span id="word-spacing-input-value">0px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-box">
+            <div class="input-row">
+              <label for="background-color-input">Background Color:</label>
+              <input type="color" id="background-color-input" value="#ffffff">
+            </div>
+            <div class="input-row">
+              <label for="background-image-input" class="file-button">Background Image:</label>
+              <input type="file" id="background-image-input" accept="image/*" oninput="changeBackgroundImage()">
+            </div>
+            <div class="input-row">
+              <button id="remove-button" class="buttontype_1" style="display: none;" onclick="removeBackgroundImage()">Remove</button>
+            </div>
+            <div class="input-row">
+              <label for="bg-toggle">Background Lines:</label>
+              <input type="checkbox" id="bg-toggle" checked aria-checked="true" oninput="toggleBackground()">
+            </div>
+            <div class="input-row">
+              <label for="shadow">shadow effect:</label>
+              <input type="checkbox" id="shadow" checked aria-checked="true" oninput=" Shadow()">
+            </div>
+            <div class="input-row">
+              <label for="quality-input">Image Quality:</label>
+              <div class="slider-container">
+                <input type="range" min="0" max="10" id="quality-input" value="2" oninput="changeQuality(); document.getElementById('quality-input-value').textContent = this.value;">
+                <span id="quality-input-value">2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </aside>
+
+      <div id="right-pane">
+      <div id="pagination-controls" class="pagination-container">
+        <button class="pagination-btn" onclick="deleteCurrentPage()"><img src="static/icons/delete.svg" alt="">Delete Current Page</button>
+        <button class="pagination-btn" id="prevBtn" onclick="prevPage()"><img src="static/icons/pervious page.svg" alt="">Previous</button>
+        <span id="pageNumber" class="page-number">Page 1</span>
+        <button class="pagination-btn" id="nextBtn" onclick="nextPage()">Next <img src="static/icons/next page.svg" alt=""></button>
+        <button class="pagination-btn" id="creatnewpage" onclick="creatNewPage()"><img src="static/icons/creat.svg" alt="">Create New Page</button>
+        <div class="button-container">
+          <select id="download_options" class="buttontype_2" onchange="handleDownload(this.value)">
+            <option value="">⬇️ Download</option>
+            <option value="image">📷 Download Current Page Image</option>
+            <option value="pdf">📄 Download All as PDF</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="outer-container">
+        <div id="final_page">
+          <div id="shadow-effect">
+            <div id="heading_page">
+              <div id="box">
+                <div id="subbox"></div>
+                <div id="top-margin" contenteditable="true"></div>
+              </div>
+              <div id="content_page">
+                <div id="left-margin"><div id="left-margin-in" contenteditable="true"></div></div>
+                <div id="output-container"><div id="output-inner-container" class="ql-editor"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Loaders -->
+  <div id="loader" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
+    <div class="spinner" style="width: 50px; height: 50px; border: 8px solid rgba(0, 0, 0, 0.1); border-left-color: #000; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+  </div>
+  <div id="pdf-loader" style="display: none;">
+    <div class="loader"></div>
+    <p>Generating PDF, please wait...</p>
+  </div>
+
+  <!-- Floating mini toolbar for heading/left-margin text formatting -->
+  <div id="mini-toolbar" aria-hidden="true">
+    <select id="mini-font-family" title="Font family">
+      <option value="AnotherFont">Handwriting 1</option>
+      <option value="CustomFont">Handwriting 2</option>
+      <option value="font3">Handwriting 3</option>
+      <option value="font4">Handwriting 4</option>
+      <option value="font5">Handwriting 5</option>
+      <option value="font6">Handwriting 6</option>
+      <option value="font7">Handwriting 7</option>
+      <option value="font8">Handwriting 8</option>
+      <option value="font9">Handwriting 9</option>
+      <option value="font10">Handwriting 10</option>
+    </select>
+    <select id="mini-font-size" title="Font size">
+      <option value="12px">12</option>
+      <option value="14px">14</option>
+      <option value="16px" selected>16</option>
+      <option value="18px">18</option>
+      <option value="20px">20</option>
+      <option value="24px">24</option>
+      <option value="28px">28</option>
+    </select>
+    <input type="color" id="mini-color" title="Text color" value="#000000" />
+    <button type="button" id="mini-bold" title="Bold"><strong>B</strong></button>
+    <button type="button" id="mini-italic" title="Italic"><em>I</em></button>
+    <button type="button" id="mini-underline" title="Underline"><u>U</u></button>
+  </div>
+
+  <!-- Drawing/image popups used by the app -->
+  <div id="drawing_popup" class="overlay" style="display: none;"></div>
+  <div id="popup-image" class="popup">
+    <div class="popup-image-content">
+      <button class="buttontype_1" onclick="closePopupimage()">close</button>
+      <div id="input-row">
+        <label for="image-upload" class="file-button">upload Image:</label>
+        <input style="display: none;" type="file" id="image-upload" accept="image/*">
+      </div>
+      <button class="buttontype_1" id="set-property-button">Set Property</button>
+      <label for="image-x">X Position %:</label>
+      <input type="number" id="image-x" min="0" max="100" value="0">
+      <label for="image-y">Y Position %:</label>
+      <input type="number" min="0" max="100" id="image-y" value="0">
+      <label for="image-width">Size %:</label>
+      <input type="number" min="0" max="100" id="image-width" value="30">
+    </div>
+  </div>
+  <div id="popup-output" class="overlay" style="display: none;">
+    <div class="popup-content">
+      <h3>Set Image Properties</h3>
+      <label for="floatInput">paper side:</label>
+      <select id="floatInput">
+        <option value="none">None</option>
+        <option value="left">Left</option>
+        <option value="right">Right</option>
+      </select>
+      <br />
+      <label for="widthInput">Width:</label>
+      <select id="widthInput">
+        <option value="25%">25%</option>
+        <option value="40%">40%</option>
+        <option value="50%">50%</option>
+        <option value="75%">75%</option>
+        <option value="100%">100%</option>
+      </select>
+      <br />
+      <button class="buttontype_1" id="set-button">Set</button>
+    </div>
+  </div>
+
+  <footer id="app-footer">
+    <div class="footer-content">
+      <span class="footer-left">Created with ❤ — dedicated to Werda</span>
+      <span class="footer-right"><a href="https://github.com/abdulmanan69" target="_blank" rel="noopener noreferrer">Abdul Manan</a></span>
+    </div>
+  </footer>
+  <script src="static/final.js"></script>
+</body>
+</html>
